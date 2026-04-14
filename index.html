@@ -1,35 +1,33 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANYMOVIE PREMIUM</title>
-    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
         body { margin: 0; background: #000; color: white; font-family: sans-serif; display: flex; overflow: hidden; }
-        #sidebar { width: 35%; height: 100vh; background: #111; overflow-y: auto; border-right: 1px solid #333; z-index: 10; }
-        #main-content { width: 65%; height: 100vh; background: #000; }
-        .movie-item { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; font-size: 14px; background: #1a1a1a; margin: 5px; border-radius: 5px; }
+        #sidebar { width: 30%; height: 100vh; background: #111; overflow-y: auto; border-right: 2px solid #e50914; }
+        #main-content { width: 70%; height: 100vh; }
+        .movie-item { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; background: #1a1a1a; margin: 5px; border-radius: 8px; font-weight: bold; }
         .movie-item:hover { background: #e50914; }
-        .video-js { width: 100% !important; height: 100% !important; }
-        h2 { padding: 15px; font-size: 18px; color: #e50914; text-align: center; margin: 0; background: #000; }
+        iframe, video { width: 100%; height: 100%; border: none; }
+        h2 { padding: 15px; color: #e50914; text-align: center; font-size: 16px; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <h2>MOVIE PLAYLIST</h2>
-    <div id="playlist">Searching...</div>
+    <h2>PLAYLIST</h2>
+    <div id="playlist">Loading...</div>
 </div>
 
-<div id="main-content">
-    <video id="anymovie-player" class="video-js vjs-default-skin" controls preload="auto"></video>
+<div id="main-content" id="player-container">
+    <div id="video-placeholder" style="display:flex; justify-content:center; align-items:center; height:100%; color:#555;">
+        Select a movie to start
+    </div>
 </div>
 
-<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
 <script>
-    var player = videojs('anymovie-player');
-    
     const m3uUrl = 'https://alraisim949-eng.github.io/anymovie-Premium-tv/list.m3u';
 
     async function loadPlaylist() {
@@ -48,20 +46,18 @@
                 } else if (line.startsWith('http')) {
                     const btn = document.createElement('div');
                     btn.className = 'movie-item';
-                    btn.innerText = 'PLAY: ' + currentTitle.trim();
+                    btn.innerText = '▶ ' + currentTitle;
                     const url = line;
                     btn.onclick = () => {
-                        player.src({ 
-                            src: url, 
-                            type: url.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' 
-                        });
-                        player.play();
+                        const container = document.getElementById('main-content');
+                        // نستخدم وسم video المباشر لأنه الأقوى للأندرويد
+                        container.innerHTML = `<video controls autoplay><source src="${url}" type="video/mp4"></video>`;
                     };
                     playlistElement.appendChild(btn);
                 }
             });
         } catch (e) {
-            document.getElementById('playlist').innerText = 'Sync Error';
+            document.getElementById('playlist').innerText = 'Error';
         }
     }
     loadPlaylist();
