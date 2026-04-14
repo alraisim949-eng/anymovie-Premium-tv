@@ -3,33 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANYMOVIE PREMIUM - VOD</title>
+    <title>ANYMOVIE PREMIUM</title>
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
         body { margin: 0; background: #000; color: white; font-family: sans-serif; display: flex; overflow: hidden; }
-        #sidebar { width: 30%; height: 100vh; background: #111; overflow-y: auto; border-right: 1px solid #333; }
-        #main-content { width: 70%; height: 100vh; position: relative; }
-        .movie-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.3s; }
-        .movie-item:hover, .movie-item.active { background: #e50914; color: white; }
+        #sidebar { width: 35%; height: 100vh; background: #111; overflow-y: auto; border-right: 1px solid #333; z-index: 10; }
+        #main-content { width: 65%; height: 100vh; background: #000; }
+        .movie-item { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; font-size: 14px; background: #1a1a1a; margin: 5px; border-radius: 5px; }
+        .movie-item:hover { background: #e50914; }
         .video-js { width: 100% !important; height: 100% !important; }
-        h2 { padding: 10px; font-size: 18px; color: #e50914; text-align: center; border-bottom: 2px solid #e50914; margin: 0; }
+        h2 { padding: 15px; font-size: 18px; color: #e50914; text-align: center; margin: 0; background: #000; }
     </style>
 </head>
 <body>
 
 <div id="sidebar">
-    <h2>MOVIE PLAYLIST</h2>
-    <div id="playlist">Loading Playlist...</div>
+    <h2>PLAYLIST</h2>
+    <div id="playlist">Searching for movies...</div>
 </div>
 
 <div id="main-content">
-    <video id="anymovie-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"></video>
+    <video id="anymovie-player" class="video-js vjs-default-skin" controls preload="auto" poster="https://via.placeholder.com/800x450?text=Select+a+Movie"></video>
 </div>
 
 <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
 <script>
     var player = videojs('anymovie-player');
-    const m3uUrl = 'https://raw.githubusercontent.com/alraisim949-eng/anymovie-Premium-tv/main/list.m3u';
+    
+    const m3uUrl = 'https://raw.githubusercontent.com/alraisim949-eng/anymovie-Premium-tv/main/list.m3u?v=' + Math.random();
 
     async function loadPlaylist() {
         try {
@@ -41,26 +42,26 @@
 
             let currentTitle = '';
             lines.forEach((line) => {
+                line = line.trim();
                 if (line.startsWith('#EXTINF')) {
-                    currentTitle = line.split(',')[1] || 'Unnamed Stream';
-                } else if (line.trim().startsWith('http')) {
+                    currentTitle = line.split(',')[1] || 'Unknown Movie';
+                } else if (line.startsWith('http')) {
                     const btn = document.createElement('div');
                     btn.className = 'movie-item';
-                    btn.innerText = currentTitle.trim();
-                    const streamUrl = line.trim();
+                    btn.innerText = 'MOVIE: ' + currentTitle;
+                    const url = line;
                     btn.onclick = () => {
-                        document.querySelectorAll('.movie-item').forEach(i => i.classList.remove('active'));
-                        btn.classList.add('active');
-                        player.src({ 
-                            src: streamUrl, 
-                            type: streamUrl.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' 
-                        });
+                        player.src({ src: url, type: url.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' });
                         player.play();
                     };
                     playlistElement.appendChild(btn);
                 }
             });
         } catch (e) {
-            document.getElementById('playlist').innerText = 'Error Loading Playlist';
+            document.getElementById('playlist').innerText = 'Connection Error';
         }
     }
+    loadPlaylist();
+</script>
+</body>
+</html>
