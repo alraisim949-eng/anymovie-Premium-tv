@@ -1,35 +1,66 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ANYMOVIE PREMIUM</title>
+    <title>ANYMOVIE PREMIUM - VOD</title>
     <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
-        body { margin: 0; padding: 0; background-color: black; }
-        .video-js { width: 100vw; height: 100vh; }
+        body { margin: 0; background: #000; color: white; font-family: sans-serif; display: flex; overflow: hidden; }
+        #sidebar { width: 30%; height: 100vh; background: #111; overflow-y: auto; border-right: 1px solid #333; }
+        #main-content { width: 70%; height: 100vh; position: relative; }
+        .movie-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; transition: 0.3s; }
+        .movie-item:hover, .movie-item.active { background: #e50914; color: white; }
+        .video-js { width: 100% !important; height: 100% !important; }
+        h2 { padding: 10px; font-size: 18px; color: #e50914; text-align: center; border-bottom: 2px solid #e50914; margin: 0; }
     </style>
 </head>
 <body>
-    <video id="anymovie-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto">
-    </video>
 
-    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
-    <script>
-        var player = videojs('anymovie-player');
-        // هذا السطر يربط المشغل بملف الأفلام الخاص بك
-        const m3uUrl = 'https://raw.githubusercontent.com/alraisim949-eng/anymovie-Premium-tv/main/list.m3u';
+<div id="sidebar">
+    <h2>MOVIE PLAYLIST</h2>
+    <div id="playlist">Loading Playlist...</div>
+</div>
 
-        fetch(m3uUrl)
-            .then(response => response.text())
-            .then(data => {
-                const lines = data.split('\n');
-                const movieLink = lines.find(line => line.trim().startsWith('http'));
-                if (movieLink) {
-                    player.src({ src: movieLink.trim(), type: 'video/mp4' });
-                    player.play();
+<div id="main-content">
+    <video id="anymovie-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"></video>
+</div>
+
+<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+<script>
+    var player = videojs('anymovie-player');
+    const m3uUrl = 'https://raw.githubusercontent.com/alraisim949-eng/anymovie-Premium-tv/main/list.m3u';
+
+    async function loadPlaylist() {
+        try {
+            const response = await fetch(m3uUrl);
+            const data = await response.text();
+            const lines = data.split('\n');
+            const playlistElement = document.getElementById('playlist');
+            playlistElement.innerHTML = '';
+
+            let currentTitle = '';
+            lines.forEach((line) => {
+                if (line.startsWith('#EXTINF')) {
+                    currentTitle = line.split(',')[1] || 'Unnamed Stream';
+                } else if (line.trim().startsWith('http')) {
+                    const btn = document.createElement('div');
+                    btn.className = 'movie-item';
+                    btn.innerText = currentTitle.trim();
+                    const streamUrl = line.trim();
+                    btn.onclick = () => {
+                        document.querySelectorAll('.movie-item').forEach(i => i.classList.remove('active'));
+                        btn.classList.add('active');
+                        player.src({ 
+                            src: streamUrl, 
+                            type: streamUrl.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' 
+                        });
+                        player.play();
+                    };
+                    playlistElement.appendChild(btn);
                 }
             });
-    </script>
-</body>
-</html>
+        } catch (e) {
+            document.getElementById('playlist').innerText = 'Error Loading Playlist';
+        }
+    }
