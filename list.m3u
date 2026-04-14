@@ -1,10 +1,7 @@
-#EXTM3U
+##EXTM3U
 
-#EXTINF:-1,Titanic Movie
-https://archive.org/download/titanic-1997-720p-br-rip-x-264-yts.am/Titanic.1997.720p.BRrip.x264.YTS.AM.mp4
-
-#EXTINF:-1,Google Test Stream
+#EXTINF:-1,Google Demo Movie
 https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
 
-#EXTINF:-1,Action Movie Test
-https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1,France 24 News (Live)
+https://static.france24.com/live/F24_EN_LO_HLS/live_tv.m3u8
