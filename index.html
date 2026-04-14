@@ -18,19 +18,19 @@
 <body>
 
 <div id="sidebar">
-    <h2>PLAYLIST</h2>
-    <div id="playlist">Searching for movies...</div>
+    <h2>MOVIE PLAYLIST</h2>
+    <div id="playlist">Searching...</div>
 </div>
 
 <div id="main-content">
-    <video id="anymovie-player" class="video-js vjs-default-skin" controls preload="auto" poster="https://via.placeholder.com/800x450?text=Select+a+Movie"></video>
+    <video id="anymovie-player" class="video-js vjs-default-skin" controls preload="auto"></video>
 </div>
 
 <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
 <script>
     var player = videojs('anymovie-player');
     
-    const m3uUrl = 'https://raw.githubusercontent.com/alraisim949-eng/anymovie-Premium-tv/main/list.m3u?v=' + Math.random();
+    const m3uUrl = 'https://alraisim949-eng.github.io/anymovie-Premium-tv/list.m3u';
 
     async function loadPlaylist() {
         try {
@@ -44,21 +44,24 @@
             lines.forEach((line) => {
                 line = line.trim();
                 if (line.startsWith('#EXTINF')) {
-                    currentTitle = line.split(',')[1] || 'Unknown Movie';
+                    currentTitle = line.split(',')[1] || 'Movie';
                 } else if (line.startsWith('http')) {
                     const btn = document.createElement('div');
                     btn.className = 'movie-item';
-                    btn.innerText = 'MOVIE: ' + currentTitle;
+                    btn.innerText = 'PLAY: ' + currentTitle.trim();
                     const url = line;
                     btn.onclick = () => {
-                        player.src({ src: url, type: url.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' });
+                        player.src({ 
+                            src: url, 
+                            type: url.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' 
+                        });
                         player.play();
                     };
                     playlistElement.appendChild(btn);
                 }
             });
         } catch (e) {
-            document.getElementById('playlist').innerText = 'Connection Error';
+            document.getElementById('playlist').innerText = 'Sync Error';
         }
     }
     loadPlaylist();
