@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ANYMOVIE PREMIUM</title>
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
     <style>
         body { margin: 0; background: #000; color: white; font-family: sans-serif; display: flex; overflow: hidden; }
         #sidebar { width: 30%; height: 100vh; background: #111; overflow-y: auto; border-right: 2px solid #e50914; }
         #main-content { width: 70%; height: 100vh; background: #000; }
-        .movie-item { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; background: #1a1a1a; margin: 5px; border-radius: 8px; font-weight: bold; }
+        .movie-item { padding: 15px; border-bottom: 1px solid #222; cursor: pointer; background: #1a1a1a; margin: 5px; border-radius: 8px; font-size: 14px; }
         .movie-item:hover { background: #e50914; }
-        video { width: 100%; height: 100%; }
-        h2 { padding: 15px; color: #e50914; text-align: center; font-size: 16px; border-bottom: 1px solid #333; margin: 0; }
+        .video-js { width: 100% !important; height: 100% !important; }
+        h2 { padding: 15px; color: #e50914; text-align: center; font-size: 16px; margin: 0; }
     </style>
 </head>
 <body>
@@ -22,13 +23,13 @@
 </div>
 
 <div id="main-content">
-    <div id="video-container" style="display:flex; justify-content:center; align-items:center; height:100%; color:#555;">
-        Select a movie to start
-    </div>
+    <video id="my-player" class="video-js vjs-default-skin vjs-big-play-centered" controls preload="auto"></video>
 </div>
 
+<script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
 <script>
-    const m3uUrl = 'https://alraisim949-eng.github.io/anymovie-Premium-tv/list.m3u';
+    var player = videojs('my-player');
+    const m3uUrl = 'https://alraisim949-eng.github.io/anymovie-Premium-tv/list.m3u?v=' + Math.random();
 
     async function loadPlaylist() {
         try {
@@ -46,13 +47,11 @@
                 } else if (line.startsWith('http')) {
                     const btn = document.createElement('div');
                     btn.className = 'movie-item';
-                    btn.innerText = 'PLAY: ' + currentTitle;
+                    btn.innerText = '▶ ' + currentTitle;
                     const url = line;
                     btn.onclick = () => {
-                        const container = document.getElementById('main-content');
-                        container.innerHTML = `<video id="v" controls autoplay style="width:100%; height:100%;"><source src="${url}" type="video/mp4"></video>`;
-                        const v = document.getElementById('v');
-                        v.play().catch(() => { window.open(url, '_blank'); });
+                        player.src({ src: url, type: url.includes('m3u8') ? 'application/x-mpegURL' : 'video/mp4' });
+                        player.play();
                     };
                     playlistElement.appendChild(btn);
                 }
