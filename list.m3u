@@ -1,0 +1,7 @@
+#EXTM3U
+
+#EXTINF:-1 tvg-logo="https://image.tmdb.org/t/p/w500/96oSQU8SArO9db997o6509lpClA.jpg", Titanic (1997) Arabic
+https://archive.org/download/titanic-1997-720p-br-rip-x-264-yts.am/Titanic.1997.720p.BRrip.x264.YTS.AM.mp4
+
+#EXTINF:-1 tvg-logo="https://via.placeholder.com/150", Demo Movie 1
+http://sample.vodobox.net/skate_phantom_flex_4k/skate_phantom_flex_4k.m3u8
